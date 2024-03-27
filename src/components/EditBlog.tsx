@@ -1,11 +1,17 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { createBlog, createTag, getBlog } from "../redux/actions/blogActions";
-import { useDispatch } from "react-redux";
+import {
+  createTag,
+  editSingleBlog,
+  getSingleBlog,
+} from "../redux/actions/blogActions";
+import { useDispatch, useSelector } from "react-redux";
+import { useParams } from "react-router-dom";
 
-const AddBlog = () => {
+const EditBlog = () => {
   const api = import.meta.env.VITE_API;
   const dispatch: any = useDispatch();
+
   const [categoryName, setCategoryName] = useState<any>("");
   const [name, setName] = useState<any>("");
   const [image, setImage] = useState<any>();
@@ -15,6 +21,9 @@ const AddBlog = () => {
   const [tagId, setTagId] = useState<any[]>([]);
   const [tagName, setTagName] = useState<any>();
 
+  const { singleBlog } = useSelector((state: any) => state.blogList);
+  //   console.log(singleBlog);
+
   const fetchData = async () => {
     const { data } = await axios.get(`${api}/category`);
     setCategoryName(data.category);
@@ -22,20 +31,37 @@ const AddBlog = () => {
     setTagName(tagName.data.tags);
   };
 
+  const blogId = useParams<any>();
+  const blog_id = blogId.blog_id;
+
   useEffect(() => {
-    dispatch(getBlog());
+    if (singleBlog) {
+      setName(singleBlog.name);
+      setDescription(singleBlog.description);
+      setCategory(singleBlog.category_id);
+      setImage(singleBlog.image);
+      setTagId(singleBlog.tags.map((tag: any) => tag.id));
+    }
+  }, [singleBlog]);
+
+  useEffect(() => {
+    dispatch(getSingleBlog({ id: blog_id }));
   }, []);
 
   const handleSubmit = async (e: any) => {
     try {
       e.preventDefault();
       console.log("submit clicked");
+      const formData = new FormData();
+      formData.append("image", image);
       dispatch(
-        createBlog({
+        editSingleBlog({
           name: name,
           description: description,
           category_id: category,
           tagId: tagId,
+          id: blog_id,
+          formData: formData,
         })
       );
     } catch (e: any) {
@@ -69,9 +95,9 @@ const AddBlog = () => {
 
   const handleTagChange = (e: any) => {
     const { value, checked } = e.target;
+    console.log("Value:", value);
+    console.log("Checked:", checked);
     if (checked) {
-      console.log(checked);
-
       // If checkbox is checked, add the tag ID to the array
       setTagId([...tagId, value]);
     } else {
@@ -92,6 +118,7 @@ const AddBlog = () => {
             <input
               type="text"
               name="name"
+              value={name}
               className="border border-black p-2 w-full"
               onChange={(e) => setName(e.target.value)}
             />
@@ -103,13 +130,14 @@ const AddBlog = () => {
               name="description"
               cols={80}
               rows={5}
+              value={description}
               className="border border-black p-2"
               onChange={(e) => setDescription(e.target.value)}
             ></textarea>
             {/* <input type="text" name="name" className="border border-black" /> */}
           </div>
 
-          {/* <div className="p-4">
+          <div className="p-4">
             <label htmlFor="image">Image: </label>
             <input
               type="file"
@@ -117,7 +145,7 @@ const AddBlog = () => {
               className="border border-black"
               onChange={(e: any) => setImage(e.target.files[0])}
             />
-          </div> */}
+          </div>
 
           <div className="p-4">
             <label htmlFor="category">Category: </label>
@@ -126,7 +154,8 @@ const AddBlog = () => {
                 <select
                   name={item.category}
                   onClick={(e: any) => setCategory(e.target.value)}
-                  defaultValue={"none"}
+                  //   defaultValue={singleBlog?.category}
+                  value={singleBlog?.category_id}
                 >
                   <option value="" selected>
                     Select category
@@ -156,6 +185,7 @@ const AddBlog = () => {
                     name={item.tag}
                     id={item.id}
                     value={item.id}
+                    // checked={tagId.includes(item.id)}
                     className="mr-4"
                     onChange={handleTagChange}
                   />
@@ -169,7 +199,7 @@ const AddBlog = () => {
             type="submit"
             className="bg-slate-400 px-4 py-2 rounded-md m-4"
           >
-            Add Blog
+            Edit Blog
           </button>
         </form>
 
@@ -195,4 +225,4 @@ const AddBlog = () => {
   );
 };
 
-export default AddBlog;
+export default EditBlog;
