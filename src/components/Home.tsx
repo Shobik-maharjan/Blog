@@ -37,10 +37,11 @@ const Home = () => {
             blog.map((item: any) => (
               <>
                 <div className="px-4 py-2 border-b border-black my-4">
-                  <div className="flex items-center">
-                    <div>
+                  <div className="flex items-center justify-between">
+                    <div className="w-9/12">
                       <h2 className="font-semibold text-xl">{item.name}</h2>
                       <p>{item.description.slice(0, 150)}</p>
+                      <p>{item.tags.map((tag: any) => "#" + tag.tag + " ")}</p>
                     </div>
 
                     <div className="image">

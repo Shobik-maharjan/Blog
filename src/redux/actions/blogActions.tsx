@@ -28,13 +28,15 @@ export const createBlog =
         category_id,
         tag_id: tagId.map((item: any) => item),
       });
-      console.log(blogData.data.message);
+      console.log(blogData.data);
 
       dispatch({
         type: CREATE_BLOG,
         payload: { name, description },
       });
-    } catch (e) {}
+    } catch (e: any) {
+      console.log(e.response.data);
+    }
   };
 
 export const getBlog = () => async (dispatch: any) => {
@@ -89,15 +91,14 @@ export const editSingleBlog =
         tag_id: tagId.map((item: any) => item),
       });
       console.log(res);
-      console.log(formData);
 
       const response = await axios.post(`${api}/add/image/${id}`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
       });
-      dispatch(getSingleBlog({ id }));
       console.log(response);
+      dispatch(getSingleBlog({ id }));
     } catch (e) {
       console.log(e);
     }

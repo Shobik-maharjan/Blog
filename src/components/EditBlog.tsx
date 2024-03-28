@@ -20,6 +20,7 @@ const EditBlog = () => {
   const [tag, setTag] = useState<any>("");
   const [tagId, setTagId] = useState<any[]>([]);
   const [tagName, setTagName] = useState<any>();
+  const [prevTagId, setPrevTagId] = useState<any>();
 
   const { singleBlog } = useSelector((state: any) => state.blogList);
   //   console.log(singleBlog);
@@ -40,7 +41,7 @@ const EditBlog = () => {
       setDescription(singleBlog.description);
       setCategory(singleBlog.category_id);
       setImage(singleBlog.image);
-      setTagId(singleBlog.tags.map((tag: any) => tag.id));
+      // setPrevTagId(singleBlog.tags.map((tag: any) => tag.id));
     }
   }, [singleBlog]);
 
@@ -52,6 +53,7 @@ const EditBlog = () => {
     try {
       e.preventDefault();
       console.log("submit clicked");
+
       const formData = new FormData();
       formData.append("image", image);
       dispatch(
@@ -92,14 +94,17 @@ const EditBlog = () => {
       console.log(e.response.data.message);
     }
   };
+  console.log(tagId);
 
   const handleTagChange = (e: any) => {
     const { value, checked } = e.target;
-    console.log("Value:", value);
-    console.log("Checked:", checked);
+    console.log(value);
+    console.log(...tagId, value);
+
     if (checked) {
       // If checkbox is checked, add the tag ID to the array
       setTagId([...tagId, value]);
+      console.log(tagId);
     } else {
       // If checkbox is unchecked, remove the tag ID from the array
       setTagId(tagId.filter((id: any) => id !== value));
@@ -185,7 +190,7 @@ const EditBlog = () => {
                     name={item.tag}
                     id={item.id}
                     value={item.id}
-                    // checked={tagId.includes(item.id)}
+                    // checked={prevTagId.includes(item.id)}
                     className="mr-4"
                     onChange={handleTagChange}
                   />
