@@ -2,7 +2,9 @@ import axios from "axios";
 import {
   CREATE_BLOG,
   GET_BLOG,
+  GET_CATEGORY,
   GET_SINGLE_BLOG,
+  GET_TAG,
 } from "../constants/blogConstants";
 import { toast } from "react-toastify";
 
@@ -91,6 +93,7 @@ export const editSingleBlog =
         tag_id: tagId.map((item: any) => item),
       });
       console.log(res);
+      toast.success("blog edited successfully");
 
       const response = await axios.post(`${api}/add/image/${id}`, formData, {
         headers: {
@@ -98,6 +101,7 @@ export const editSingleBlog =
         },
       });
       console.log(response);
+
       dispatch(getSingleBlog({ id }));
     } catch (e) {
       console.log(e);
@@ -123,8 +127,33 @@ export const createTag =
       await axios.post(`${api}/create/tag`, {
         tag,
       });
+      toast.success("tag added successfully");
       console.log("tag added");
     } catch (e) {
       console.log(e);
     }
   };
+
+export const getCategory = () => async (dispatch: any) => {
+  try {
+    const res = await axios.get(`${api}/category`);
+    dispatch({
+      type: GET_CATEGORY,
+      payload: res.data.category,
+    });
+  } catch (e) {
+    console.log(e);
+  }
+};
+
+export const getTagName = () => async (dispatch: any) => {
+  try {
+    const res = await axios.get(`${api}/tag`);
+    dispatch({
+      type: GET_TAG,
+      payload: res.data.tags,
+    });
+  } catch (e) {
+    console.log(e);
+  }
+};

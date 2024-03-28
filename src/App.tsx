@@ -5,6 +5,7 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import EditBlog from "./components/EditBlog";
 import Navbar from "./components/Navbar";
+import SinglePageBlog from "./components/SinglePageBlog";
 
 const App = () => {
   return (
@@ -15,6 +16,7 @@ const App = () => {
           <Route path="/" element={<Home />} />
           <Route path="/add-blog" element={<AddBlog />} />
           <Route path="/edit-blog/:blog_id" element={<EditBlog />} />
+          <Route path="/blog/:blog_id" element={<SinglePageBlog />} />
         </Routes>
         <ToastContainer closeOnClick />
       </BrowserRouter>

@@ -41,7 +41,7 @@ const EditBlog = () => {
       setDescription(singleBlog.description);
       setCategory(singleBlog.category_id);
       setImage(singleBlog.image);
-      // setPrevTagId(singleBlog.tags.map((tag: any) => tag.id));
+      setPrevTagId(singleBlog.tags.map((tag: any) => tag.id));
     }
   }, [singleBlog]);
 
@@ -94,23 +94,24 @@ const EditBlog = () => {
       console.log(e.response.data.message);
     }
   };
-  console.log(tagId);
 
   const handleTagChange = (e: any) => {
     const { value, checked } = e.target;
-    console.log(value);
-    console.log(...tagId, value);
+    // console.log(value);
 
     if (checked) {
       // If checkbox is checked, add the tag ID to the array
+
       setTagId([...tagId, value]);
-      console.log(tagId);
+      console.log([tagId]);
     } else {
       // If checkbox is unchecked, remove the tag ID from the array
       setTagId(tagId.filter((id: any) => id !== value));
     }
   };
 
+  console.log("prev", prevTagId);
+  console.log("all tag", [tagId]);
   useEffect(() => {
     fetchData();
   }, []);
@@ -189,8 +190,12 @@ const EditBlog = () => {
                     type="checkbox"
                     name={item.tag}
                     id={item.id}
-                    value={item.id}
-                    // checked={prevTagId.includes(item.id)}
+                    value={[item.id]}
+                    defaultChecked={
+                      prevTagId.includes(item.id)
+                        ? prevTagId.includes(item.id)
+                        : ""
+                    }
                     className="mr-4"
                     onChange={handleTagChange}
                   />

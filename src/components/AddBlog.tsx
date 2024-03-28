@@ -1,29 +1,30 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { createBlog, createTag, getBlog } from "../redux/actions/blogActions";
-import { useDispatch } from "react-redux";
+import {
+  createBlog,
+  createTag,
+  getBlog,
+  getCategory,
+  getTagName,
+} from "../redux/actions/blogActions";
+import { useDispatch, useSelector } from "react-redux";
 
 const AddBlog = () => {
   const api = import.meta.env.VITE_API;
   const dispatch: any = useDispatch();
   const [categoryName, setCategoryName] = useState<any>("");
   const [name, setName] = useState<any>("");
-  const [image, setImage] = useState<any>();
+  // const [image, setImage] = useState<any>();
   const [description, setDescription] = useState<any>("");
-  const [category, setCategory] = useState<any>("");
+  const [categoryId, setCategoryId] = useState<any>("");
   const [tag, setTag] = useState<any>("");
   const [tagId, setTagId] = useState<any[]>([]);
-  const [tagName, setTagName] = useState<any>();
 
-  const fetchData = async () => {
-    const { data } = await axios.get(`${api}/category`);
-    setCategoryName(data.category);
-    const tagName = await axios.get(`${api}/tag`);
-    setTagName(tagName.data.tags);
-  };
+  const { categoryList, tagList } = useSelector((state: any) => state.blogList);
 
   useEffect(() => {
-    dispatch(getBlog());
+    dispatch(getCategory());
+    dispatch(getTagName());
   }, []);
 
   const handleSubmit = async (e: any) => {
@@ -34,7 +35,7 @@ const AddBlog = () => {
         createBlog({
           name: name,
           description: description,
-          category_id: category,
+          category_id: categoryId,
           tagId: tagId,
         })
       );
@@ -70,7 +71,7 @@ const AddBlog = () => {
   const handleTagChange = (e: any) => {
     const { value, checked } = e.target;
     if (checked) {
-      console.log(checked);
+      // console.log(checked);
 
       // If checkbox is checked, add the tag ID to the array
       setTagId([...tagId, value]);
@@ -80,9 +81,6 @@ const AddBlog = () => {
     }
   };
 
-  useEffect(() => {
-    fetchData();
-  }, []);
   return (
     <>
       <div>
@@ -109,29 +107,24 @@ const AddBlog = () => {
             {/* <input type="text" name="name" className="border border-black" /> */}
           </div>
 
-          {/* <div className="p-4">
-            <label htmlFor="image">Image: </label>
-            <input
-              type="file"
-              name="image"
-              className="border border-black"
-              onChange={(e: any) => setImage(e.target.files[0])}
-            />
-          </div> */}
-
           <div className="p-4">
             <label htmlFor="category">Category: </label>
-            {categoryName &&
-              categoryName.map((item: any) => (
+            {categoryList &&
+              categoryList.map((item: any) => (
                 <select
+                  key={item.id}
                   name={item.category}
-                  onClick={(e: any) => setCategory(e.target.value)}
+                  onClick={(e: any) => setCategoryId(e.target.value)}
                   defaultValue={"none"}
                 >
                   <option value="" selected>
                     Select category
                   </option>
-                  <option value={item.id} className="border border-black">
+                  <option
+                    value={item.id}
+                    key={item.id}
+                    className="border border-black"
+                  >
                     {item.category}
                   </option>
                 </select>
@@ -145,9 +138,9 @@ const AddBlog = () => {
               id=""
               onClick={(e: any) => setTagId(e.target.value)}
             > */}
-            {tagName &&
-              tagName.map((item: any) => (
-                <>
+            {tagList &&
+              tagList.map((item: any) => (
+                <div key={item.id}>
                   <label htmlFor={item.tag} className="pr-1">
                     {item.tag}
                   </label>
@@ -159,7 +152,7 @@ const AddBlog = () => {
                     className="mr-4"
                     onChange={handleTagChange}
                   />
-                </>
+                </div>
                 // <option value={item.id}>{item.tag}</option>
               ))}
             {/* </select> */}

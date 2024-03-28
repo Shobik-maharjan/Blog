@@ -1,7 +1,9 @@
 import {
   CREATE_BLOG,
   GET_BLOG,
+  GET_CATEGORY,
   GET_SINGLE_BLOG,
+  GET_TAG,
 } from "../constants/blogConstants";
 
 const initialData = {
@@ -24,6 +26,16 @@ const blogReducers = (state: any = initialData, action: any) => {
       return {
         ...state,
         singleBlog: action.payload,
+      };
+    case GET_CATEGORY:
+      return {
+        ...state,
+        categoryList: action.payload,
+      };
+    case GET_TAG:
+      return {
+        ...state,
+        tagList: action.payload,
       };
     default:
       return state;

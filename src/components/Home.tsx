@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { deleteblog, getBlog } from "../redux/actions/blogActions";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const Home = () => {
   const storage_api = import.meta.env.VITE_STORAGE_API;
@@ -30,45 +30,55 @@ const Home = () => {
     <>
       <div className="p-4">
         <div>
-          <h2>Blogs</h2>
+          <h2 className="text-3xl font-semibold p-2 text-center mb-6">Blogs</h2>
         </div>
-        <div>
-          {blog &&
-            blog.map((item: any) => (
-              <>
-                <div className="px-4 py-2 border-b border-black my-4">
-                  <div className="flex items-center justify-between">
-                    <div className="w-9/12">
-                      <h2 className="font-semibold text-xl">{item.name}</h2>
-                      <p>{item.description.slice(0, 150)}</p>
-                      <p>{item.tags.map((tag: any) => "#" + tag.tag + " ")}</p>
-                    </div>
+        <div className="flex">
+          <div className="grid grid-cols-4 gap-2">
+            {blog &&
+              blog.map((item: any) => (
+                <>
+                  <div className="p-2 min-h-96 flex border rounded-md justify-center shadow-md">
+                    <div className="flex flex-col justify-between gap-4 w-full">
+                      <Link to={`/blog/${item.id}`}>
+                        <div className="flex flex-col gap-2">
+                          <div className="image mx-auto w-full ">
+                            <img
+                              src={`${storage_api}/${item.image}`}
+                              alt="image"
+                              className="w-full h-28 object-cover rounded-md"
+                            />
+                          </div>
 
-                    <div className="image">
-                      <img
-                        src={`${storage_api}/${item.image}`}
-                        alt="image"
-                        className="max-w-40"
-                      />
-                    </div>
-                    <div className="flex">
-                      <button
-                        className="button px-4 py-2 rounded-md bg-green-500 mx-2"
-                        onClick={() => handleEditBlog(item.id)}
-                      >
-                        Edit
-                      </button>
-                      <button
-                        className="button p-2  rounded-md bg-red-500 mx-2"
-                        onClick={() => handleDeleteBlog(item.id)}
-                      >
-                        Delete
-                      </button>
+                          <div className="w-full flex flex-col gap-2 min-h-40">
+                            <span className="text-blue-500">
+                              {item.tags.map((tag: any) => "#" + tag.tag + " ")}
+                            </span>
+                            <h2 className="font-semibold text-xl">
+                              {item.name.slice(0, 25)}
+                            </h2>
+                            <p>{item.description.slice(0, 50)}</p>
+                          </div>
+                        </div>
+                      </Link>
+                      <div className="flex">
+                        <button
+                          className="button px-3 py-1 rounded-md bg-green-500 mr-2"
+                          onClick={() => handleEditBlog(item.id)}
+                        >
+                          Edit
+                        </button>
+                        <button
+                          className="button px-2 rounded-md bg-red-500 mx-2"
+                          onClick={() => handleDeleteBlog(item.id)}
+                        >
+                          Delete
+                        </button>
+                      </div>
                     </div>
                   </div>
-                </div>
-              </>
-            ))}
+                </>
+              ))}
+          </div>
         </div>
       </div>
     </>
