@@ -1,5 +1,7 @@
 import axios from "axios";
 import {
+  BLOG_REQUEST,
+  BLOG_REQUEST_SUCCESS,
   CREATE_BLOG,
   GET_BLOG,
   GET_CATEGORY,
@@ -43,10 +45,16 @@ export const createBlog =
 
 export const getBlog = () => async (dispatch: any) => {
   try {
+    dispatch({
+      type: BLOG_REQUEST,
+    });
     const { data } = await axios.get(`${api}/blog`);
     dispatch({
       type: GET_BLOG,
       payload: data,
+    });
+    dispatch({
+      type: BLOG_REQUEST_SUCCESS,
     });
   } catch (e) {
     console.log(e);

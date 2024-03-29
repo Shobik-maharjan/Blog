@@ -1,4 +1,6 @@
 import {
+  BLOG_REQUEST,
+  BLOG_REQUEST_SUCCESS,
   CREATE_BLOG,
   GET_BLOG,
   GET_CATEGORY,
@@ -26,6 +28,15 @@ const blogReducers = (state: any = initialData, action: any) => {
       return {
         ...state,
         singleBlog: action.payload,
+      };
+    case BLOG_REQUEST:
+      return {
+        loading: true,
+      };
+    case BLOG_REQUEST_SUCCESS:
+      return {
+        ...state,
+        loading: false,
       };
     case GET_CATEGORY:
       return {

@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
-import { getSingleBlog } from "../redux/actions/blogActions";
+import { getSingleBlog } from "../../redux/actions/blogActions";
 
 const SinglePageBlog = () => {
   const blogId = useParams();
@@ -20,7 +20,7 @@ const SinglePageBlog = () => {
     <>
       <div className="mt-6">
         {singleBlog && (
-          <div className="article w-8/12 mx-auto">
+          <div className="article">
             <div>
               <div className="category">
                 <h2 className="font-semibold text-lg px-2 py-1 bg-blue-700 w-fit text-white rounded-md">
@@ -39,7 +39,7 @@ const SinglePageBlog = () => {
                 <img
                   src={`${storage_api}/${singleBlog.image}`}
                   alt=""
-                  className=""
+                  className="rounded-md"
                 />
               </div>
               <div className="desctiprion leading-	">
