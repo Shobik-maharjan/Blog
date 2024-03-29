@@ -1,36 +1,28 @@
-import axios from "axios";
 import { useEffect, useState } from "react";
 import {
   createTag,
   editSingleBlog,
+  getCategory,
   getSingleBlog,
+  getTagName,
 } from "../redux/actions/blogActions";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 
 const EditBlog = () => {
-  const api = import.meta.env.VITE_API;
   const dispatch: any = useDispatch();
 
-  const [categoryName, setCategoryName] = useState<any>("");
   const [name, setName] = useState<any>("");
   const [image, setImage] = useState<any>();
   const [description, setDescription] = useState<any>("");
   const [category, setCategory] = useState<any>("");
   const [tag, setTag] = useState<any>("");
   const [tagId, setTagId] = useState<any[]>([]);
-  const [tagName, setTagName] = useState<any>();
-  const [prevTagId, setPrevTagId] = useState<any>();
+  // const [prevTagId, setPrevTagId] = useState<any>();
 
-  const { singleBlog } = useSelector((state: any) => state.blogList);
-  //   console.log(singleBlog);
-
-  const fetchData = async () => {
-    const { data } = await axios.get(`${api}/category`);
-    setCategoryName(data.category);
-    const tagName = await axios.get(`${api}/tag`);
-    setTagName(tagName.data.tags);
-  };
+  const { singleBlog, categoryList, tagList } = useSelector(
+    (state: any) => state.blogList
+  );
 
   const blogId = useParams<any>();
   const blog_id = blogId.blog_id;
@@ -40,22 +32,25 @@ const EditBlog = () => {
       setName(singleBlog.name);
       setDescription(singleBlog.description);
       setCategory(singleBlog.category_id);
-      setImage(singleBlog.image);
-      setPrevTagId(singleBlog.tags.map((tag: any) => tag.id));
+      // setImage(singleBlog.image);
+      // setPrevTagId();
+      setTagId(singleBlog.tags.map((tag: any) => tag.id));
     }
   }, [singleBlog]);
 
   useEffect(() => {
+    dispatch(getCategory());
+    dispatch(getTagName());
     dispatch(getSingleBlog({ id: blog_id }));
   }, []);
 
   const handleSubmit = async (e: any) => {
     try {
       e.preventDefault();
-      console.log("submit clicked");
 
       const formData = new FormData();
       formData.append("image", image);
+
       dispatch(
         editSingleBlog({
           name: name,
@@ -69,21 +64,6 @@ const EditBlog = () => {
     } catch (e: any) {
       console.log(e.response.data.message);
     }
-
-    // try {
-    //   const formData = new FormData();
-    //   formData.append("image", image);
-
-    //   console.log(formData);
-    //   const response = await axios.post(`${api}/add/image`, formData, {
-    //     headers: {
-    //       "Content-Type": "multipart/form-data",
-    //     },
-    //   });
-    //   console.log("Image uploaded successfully:", response.data);
-    // } catch (error) {
-    //   console.error("Error uploading image:", error);
-    // }
   };
 
   const handleTag = async (e: any) => {
@@ -97,29 +77,26 @@ const EditBlog = () => {
 
   const handleTagChange = (e: any) => {
     const { value, checked } = e.target;
-    // console.log(value);
+
+    const tagIdNumber = parseInt(value, 10);
 
     if (checked) {
       // If checkbox is checked, add the tag ID to the array
-
-      setTagId([...tagId, value]);
-      console.log([tagId]);
+      if (!tagId.includes(tagIdNumber)) {
+        setTagId([...tagId, tagIdNumber]);
+      }
+      // console.log([tagId]);
     } else {
       // If checkbox is unchecked, remove the tag ID from the array
-      setTagId(tagId.filter((id: any) => id !== value));
+      setTagId(tagId.filter((id: any) => id !== tagIdNumber));
     }
   };
 
-  console.log("prev", prevTagId);
-  console.log("all tag", [tagId]);
-  useEffect(() => {
-    fetchData();
-  }, []);
   return (
     <>
-      <div>
+      <div className="w-10/12 mx-auto">
         <form action="" onSubmit={handleSubmit} encType="multipart/formData">
-          <div className="p-4 flex items-center">
+          <div className="p-4">
             <label htmlFor="name">Name: </label>
             <input
               type="text"
@@ -130,17 +107,16 @@ const EditBlog = () => {
             />
           </div>
 
-          <div className="p-4 flex">
+          <div className="p-4">
             <label htmlFor="description">Description: </label>
             <textarea
               name="description"
               cols={80}
               rows={5}
               value={description}
-              className="border border-black p-2"
+              className="border border-black p-2 w-full"
               onChange={(e) => setDescription(e.target.value)}
             ></textarea>
-            {/* <input type="text" name="name" className="border border-black" /> */}
           </div>
 
           <div className="p-4">
@@ -153,36 +129,41 @@ const EditBlog = () => {
             />
           </div>
 
-          <div className="p-4">
+          <div className="p-4 flex">
             <label htmlFor="category">Category: </label>
-            {categoryName &&
-              categoryName.map((item: any) => (
-                <select
-                  name={item.category}
-                  onClick={(e: any) => setCategory(e.target.value)}
-                  //   defaultValue={singleBlog?.category}
-                  value={singleBlog?.category_id}
-                >
-                  <option value="" selected>
-                    Select category
-                  </option>
-                  <option value={item.id} className="border border-black">
-                    {item.category}
-                  </option>
-                </select>
-              ))}
+
+            <div>
+              <select
+                onChange={(e: any) => setCategory(e.target.value)}
+                value={category}
+              >
+                <option value="">Select category</option>
+                {categoryList &&
+                  categoryList.map((item: any) => (
+                    <option
+                      value={item.id}
+                      className="border border-black"
+                      key={item.id}
+                    >
+                      {item.category}
+                    </option>
+                  ))}
+              </select>
+            </div>
           </div>
 
-          <div className="p-4">
-            <label htmlFor="tag">Tags: </label>
+          <div className="p-4 flex">
+            <label htmlFor="tag" className="pr-2">
+              Tags:{" "}
+            </label>
             {/* <select
               name=""
               id=""
               onClick={(e: any) => setTagId(e.target.value)}
             > */}
-            {tagName &&
-              tagName.map((item: any) => (
-                <>
+            {tagList &&
+              tagList.map((item: any) => (
+                <div key={item.id}>
                   <label htmlFor={item.tag} className="pr-1">
                     {item.tag}
                   </label>
@@ -191,15 +172,11 @@ const EditBlog = () => {
                     name={item.tag}
                     id={item.id}
                     value={[item.id]}
-                    defaultChecked={
-                      prevTagId.includes(item.id)
-                        ? prevTagId.includes(item.id)
-                        : ""
-                    }
+                    checked={tagId?.includes(item.id)}
                     className="mr-4"
                     onChange={handleTagChange}
                   />
-                </>
+                </div>
                 // <option value={item.id}>{item.tag}</option>
               ))}
             {/* </select> */}
@@ -219,6 +196,7 @@ const EditBlog = () => {
             <input
               type="text"
               name="addTag"
+              value={tag}
               className="border border-black p-2"
               onChange={(e: any) => setTag(e.target.value)}
             />

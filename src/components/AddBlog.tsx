@@ -1,24 +1,20 @@
-import axios from "axios";
 import { useEffect, useState } from "react";
 import {
   createBlog,
   createTag,
-  getBlog,
   getCategory,
   getTagName,
 } from "../redux/actions/blogActions";
 import { useDispatch, useSelector } from "react-redux";
 
 const AddBlog = () => {
-  const api = import.meta.env.VITE_API;
   const dispatch: any = useDispatch();
-  const [categoryName, setCategoryName] = useState<any>("");
   const [name, setName] = useState<any>("");
-  // const [image, setImage] = useState<any>();
   const [description, setDescription] = useState<any>("");
   const [categoryId, setCategoryId] = useState<any>("");
   const [tag, setTag] = useState<any>("");
   const [tagId, setTagId] = useState<any[]>([]);
+  const [error, setError] = useState<any>("");
 
   const { categoryList, tagList } = useSelector((state: any) => state.blogList);
 
@@ -31,18 +27,24 @@ const AddBlog = () => {
     try {
       e.preventDefault();
       console.log("submit clicked");
-      dispatch(
-        createBlog({
-          name: name,
-          description: description,
-          category_id: categoryId,
-          tagId: tagId,
-        })
-      );
+
+      if (name && description && categoryId && tagId) {
+        setError("");
+        dispatch(
+          createBlog({
+            name: name,
+            description: description,
+            category_id: categoryId,
+            tagId: tagId,
+          })
+        );
+      } else {
+        setError("All field are required");
+      }
     } catch (e: any) {
       console.log(e.response.data.message);
     }
-
+    console.log(error);
     // try {
     //   const formData = new FormData();
     //   formData.append("image", image);
@@ -83,56 +85,55 @@ const AddBlog = () => {
 
   return (
     <>
-      <div>
+      <div className="w-10/12 mx-auto">
         <form action="" onSubmit={handleSubmit} encType="multipart/formData">
-          <div className="p-4 flex items-center">
+          <div className="p-4">
             <label htmlFor="name">Name: </label>
             <input
               type="text"
               name="name"
+              value={name}
               className="border border-black p-2 w-full"
               onChange={(e) => setName(e.target.value)}
             />
           </div>
 
-          <div className="p-4 flex">
+          <div className="p-4">
             <label htmlFor="description">Description: </label>
             <textarea
               name="description"
-              cols={80}
               rows={5}
-              className="border border-black p-2"
+              value={description}
+              className="border border-black p-2 w-full"
               onChange={(e) => setDescription(e.target.value)}
             ></textarea>
             {/* <input type="text" name="name" className="border border-black" /> */}
           </div>
 
-          <div className="p-4">
+          <div className="p-4 flex">
             <label htmlFor="category">Category: </label>
-            {categoryList &&
-              categoryList.map((item: any) => (
-                <select
-                  key={item.id}
-                  name={item.category}
-                  onClick={(e: any) => setCategoryId(e.target.value)}
-                  defaultValue={"none"}
-                >
-                  <option value="" selected>
-                    Select category
-                  </option>
-                  <option
-                    value={item.id}
-                    key={item.id}
-                    className="border border-black"
-                  >
-                    {item.category}
-                  </option>
-                </select>
-              ))}
+
+            <select onClick={(e: any) => setCategoryId(e.target.value)}>
+              <option value="">Select category</option>
+              {categoryList &&
+                categoryList.map((item: any) => (
+                  <>
+                    <option
+                      value={item.id}
+                      className="border border-black"
+                      key={item.id}
+                    >
+                      {item.category}
+                    </option>
+                  </>
+                ))}
+            </select>
           </div>
 
-          <div className="p-4">
-            <label htmlFor="tag">Tags: </label>
+          <div className="p-4 flex">
+            <label htmlFor="tag" className="pr-2">
+              Tags:{" "}
+            </label>
             {/* <select
               name=""
               id=""
@@ -157,6 +158,8 @@ const AddBlog = () => {
               ))}
             {/* </select> */}
           </div>
+
+          <div className="error text-red-500 px-4">{error}</div>
 
           <button
             type="submit"

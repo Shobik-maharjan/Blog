@@ -24,13 +24,13 @@ export const createBlog =
   }) =>
   async (dispatch: any) => {
     try {
-      const blogData = await axios.post(`${api}/create/blog`, {
+      await axios.post(`${api}/create/blog`, {
         name,
         description,
         category_id,
         tag_id: tagId.map((item: any) => item),
       });
-      console.log(blogData.data);
+      toast.success("Blog added successfully");
 
       dispatch({
         type: CREATE_BLOG,
@@ -44,7 +44,6 @@ export const createBlog =
 export const getBlog = () => async (dispatch: any) => {
   try {
     const { data } = await axios.get(`${api}/blog`);
-    console.log(data);
     dispatch({
       type: GET_BLOG,
       payload: data,
@@ -86,21 +85,21 @@ export const editSingleBlog =
   }) =>
   async (dispatch: any) => {
     try {
-      const res = await axios.put(`${api}/edit/blog/${id}`, {
+      await axios.put(`${api}/edit/blog/${id}`, {
         name,
         description,
         category_id,
         tag_id: tagId.map((item: any) => item),
       });
-      console.log(res);
-      toast.success("blog edited successfully");
+      toast.success("Blog edited successfully");
 
-      const response = await axios.post(`${api}/add/image/${id}`, formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
-      console.log(response);
+      if (formData.get("image").name) {
+        await axios.post(`${api}/add/image/${id}`, formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        });
+      }
 
       dispatch(getSingleBlog({ id }));
     } catch (e) {
@@ -114,7 +113,7 @@ export const deleteblog =
     try {
       await axios.delete(`${api}/delete/blog/${id}`);
       dispatch(getBlog());
-      toast.success("blog deleted successfully");
+      toast.success("Blog deleted successfully");
     } catch (e) {
       console.log(e);
     }
@@ -127,7 +126,7 @@ export const createTag =
       await axios.post(`${api}/create/tag`, {
         tag,
       });
-      toast.success("tag added successfully");
+      toast.success("Tag added successfully");
       console.log("tag added");
     } catch (e) {
       console.log(e);

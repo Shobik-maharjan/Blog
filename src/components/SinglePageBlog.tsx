@@ -9,10 +9,8 @@ const SinglePageBlog = () => {
   const storage_api = import.meta.env.VITE_STORAGE_API;
 
   const blog_id = blogId.blog_id;
-  console.log(blogId);
 
   const { singleBlog } = useSelector((state: any) => state.blogList);
-  console.log(singleBlog);
 
   useEffect(() => {
     dispatch(getSingleBlog({ id: blog_id }));
@@ -20,11 +18,16 @@ const SinglePageBlog = () => {
 
   return (
     <>
-      <div>
+      <div className="mt-6">
         {singleBlog && (
           <div className="article w-8/12 mx-auto">
             <div>
-              <div className="title text-center">
+              <div className="category">
+                <h2 className="font-semibold text-lg px-2 py-1 bg-blue-700 w-fit text-white rounded-md">
+                  {singleBlog.category.category}
+                </h2>
+              </div>
+              <div className="title py-2">
                 <h2 className="font-semibold text-xl">{singleBlog.name}</h2>
               </div>
               <div className="tags">
@@ -39,7 +42,7 @@ const SinglePageBlog = () => {
                   className=""
                 />
               </div>
-              <div className="desctiprion text-justify">
+              <div className="desctiprion leading-	">
                 <p>{singleBlog.description}</p>
               </div>
             </div>

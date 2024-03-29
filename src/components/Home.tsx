@@ -11,7 +11,6 @@ const Home = () => {
   const dispatch = useDispatch<any>();
   const { getBlogs } = useSelector((state: any) => state.blogList);
   const blog = getBlogs?.blogs;
-  console.log(blog);
 
   const handleDeleteBlog = (id: any) => {
     dispatch(deleteblog({ id }));
@@ -45,7 +44,7 @@ const Home = () => {
                             <img
                               src={`${storage_api}/${item.image}`}
                               alt="image"
-                              className="w-full h-28 object-cover rounded-md"
+                              className="w-full h-40 object-cover rounded-md"
                             />
                           </div>
 
