@@ -56,7 +56,7 @@ const Card = ({
           </Link>
           <div className="flex">
             <button
-              className="button px-3 py-1 rounded-md bg-green-500 mr-2"
+              className="button px-3 py-1 rounded-md bg-slate-400 mr-2"
               onClick={() => handleEditBlog(blog_id)}
             >
               Edit

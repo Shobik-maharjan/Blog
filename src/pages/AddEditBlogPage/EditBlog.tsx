@@ -8,11 +8,13 @@ import {
 } from "../../redux/actions/blogActions";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
+import { useFormik } from "formik";
+import { addBlogSchema } from "src/schemas";
 
 const EditBlog = () => {
   const dispatch: any = useDispatch();
 
-  const [name, setName] = useState<any>("");
+  const [prevName, setName] = useState<any>("");
   const [image, setImage] = useState<any>();
   const [description, setDescription] = useState<any>("");
   const [category, setCategory] = useState<any>("");
@@ -20,12 +22,62 @@ const EditBlog = () => {
   const [tagId, setTagId] = useState<any[]>([]);
   // const [prevTagId, setPrevTagId] = useState<any>();
 
+  const blogId = useParams<any>();
+  const blog_id = blogId.blog_id;
   const { singleBlog, categoryList, tagList } = useSelector(
     (state: any) => state.blogList
   );
+  const formData = new FormData();
+  formData.append("image", image);
 
-  const blogId = useParams<any>();
-  const blog_id = blogId.blog_id;
+  const initialValues = {
+    name: prevName,
+    description: description,
+    category: category,
+    tag: tagId,
+    image: formData,
+  };
+
+  const {
+    values,
+    errors,
+    setValues,
+    touched,
+    handleBlur,
+    handleChange,
+    handleSubmit,
+  } = useFormik({
+    initialValues,
+    validationSchema: addBlogSchema,
+    onSubmit: (values) => {
+      const { name, description, category, tag } = values;
+      const formData: any = new FormData();
+      formData.append("image", image);
+
+      console.log("clicked");
+
+      dispatch(
+        editSingleBlog({
+          name: name,
+          description: description,
+          category_id: category,
+          tagId: tag,
+          id: blog_id,
+          formData: formData,
+        })
+      );
+    },
+  });
+
+  useEffect(() => {
+    setValues({
+      ...values,
+      name: prevName,
+      description: description,
+      category: category,
+      tag: tagId,
+    });
+  }, [prevName, description, category, tagId]);
 
   useEffect(() => {
     if (singleBlog) {
@@ -44,27 +96,27 @@ const EditBlog = () => {
     dispatch(getSingleBlog({ id: blog_id }));
   }, []);
 
-  const handleSubmit = async (e: any) => {
-    try {
-      e.preventDefault();
+  // const handleSubmit = async (e: any) => {
+  //   try {
+  //     e.preventDefault();
 
-      const formData = new FormData();
-      formData.append("image", image);
+  //     const formData = new FormData();
+  //     formData.append("image", image);
 
-      dispatch(
-        editSingleBlog({
-          name: name,
-          description: description,
-          category_id: category,
-          tagId: tagId,
-          id: blog_id,
-          formData: formData,
-        })
-      );
-    } catch (e: any) {
-      console.log(e.response.data.message);
-    }
-  };
+  //     dispatch(
+  //       editSingleBlog({
+  //         name: name,
+  //         description: description,
+  //         category_id: category,
+  //         tagId: tagId,
+  //         id: blog_id,
+  //         formData: formData,
+  //       })
+  //     );
+  //   } catch (e: any) {
+  //     console.log(e.response.data.message);
+  //   }
+  // };
 
   const handleTag = async (e: any) => {
     try {
@@ -101,23 +153,37 @@ const EditBlog = () => {
             <input
               type="text"
               name="name"
-              value={name}
+              id="name"
+              value={values.name}
               className="border border-black p-2 w-full"
-              onChange={(e) => setName(e.target.value)}
+              // onChange={(e) => setName(e.target.value)}
+              onBlur={handleBlur}
+              onChange={handleChange}
             />
           </div>
+          {typeof errors.name === "string" && touched.name ? (
+            <div className="form-error px-4 text-red-500">{errors.name}</div>
+          ) : null}
 
           <div className="p-4">
             <label htmlFor="description">Description: </label>
             <textarea
               name="description"
+              id="description"
               cols={80}
               rows={5}
-              value={description}
+              value={values.description}
               className="border border-black p-2 w-full"
-              onChange={(e) => setDescription(e.target.value)}
+              // onChange={(e) => setDescription(e.target.value)}
+              onBlur={handleBlur}
+              onChange={handleChange}
             ></textarea>
           </div>
+          {typeof errors.description === "string" && touched.description ? (
+            <div className="form-error px-4 text-red-500">
+              {errors.description}
+            </div>
+          ) : null}
 
           <div className="p-4">
             <label htmlFor="image">Image: </label>
@@ -136,6 +202,8 @@ const EditBlog = () => {
               <select
                 onChange={(e: any) => setCategory(e.target.value)}
                 value={category}
+                name="category"
+                id="category"
               >
                 <option value="">Select category</option>
                 {categoryList &&
@@ -151,6 +219,11 @@ const EditBlog = () => {
               </select>
             </div>
           </div>
+          {errors.category && touched.category ? (
+            <div className="form-error px-4 text-red-500">
+              {errors.category}
+            </div>
+          ) : null}
 
           <div className="p-4 flex">
             <label htmlFor="tag" className="pr-2">
@@ -169,7 +242,7 @@ const EditBlog = () => {
                   </label>
                   <input
                     type="checkbox"
-                    name={item.tag}
+                    name="tag"
                     id={item.id}
                     value={[item.id]}
                     checked={tagId?.includes(item.id)}
@@ -181,6 +254,9 @@ const EditBlog = () => {
               ))}
             {/* </select> */}
           </div>
+          {errors.tag && touched.tag ? (
+            <div className="form-error px-4 text-red-500">{errors.tag}</div>
+          ) : null}
 
           <button
             type="submit"

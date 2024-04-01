@@ -14,8 +14,6 @@ const Home = () => {
   const { getBlogs, loading } = useSelector((state: any) => state.blogList);
   const blog = getBlogs?.blogs;
 
-  console.log(loading);
-
   useEffect(() => {
     dispatch(getBlog());
   }, []);
