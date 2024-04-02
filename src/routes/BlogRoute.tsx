@@ -1,17 +1,15 @@
 import { Route, Routes } from "react-router-dom";
-import Home from "../pages/Home/Home";
-import AddBlog from "../pages/AddEditBlogPage/AddBlog";
-import EditBlog from "../pages/AddEditBlogPage/EditBlog";
 import SinglePageBlog from "../pages/SinglePageBlog/SinglePageBlog";
 import PageNotFound from "../pages/PageNotFound";
+import UserHome from "src/pages/Home/UserHome";
+import Contact from "src/pages/contact/Contact";
 
 const BlogRoute = () => {
   return (
     <Routes>
-      <Route index element={<Home />} />
-      <Route path="add-blog" element={<AddBlog />} />
-      <Route path="edit-blog/:blog_id" element={<EditBlog />} />
+      <Route index element={<UserHome />} />
       <Route path="single-blog/:blog_id" element={<SinglePageBlog />} />
+      <Route path="contact/*" element={<Contact />} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
   );

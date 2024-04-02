@@ -20,7 +20,6 @@ const EditBlog = () => {
   const [category, setCategory] = useState<any>("");
   const [tag, setTag] = useState<any>("");
   const [tagId, setTagId] = useState<any[]>([]);
-  // const [prevTagId, setPrevTagId] = useState<any>();
 
   const blogId = useParams<any>();
   const blog_id = blogId.blog_id;
@@ -147,8 +146,13 @@ const EditBlog = () => {
   return (
     <>
       <div>
-        <form action="" onSubmit={handleSubmit} encType="multipart/formData">
-          <div className="p-4">
+        <form
+          action=""
+          onSubmit={handleSubmit}
+          encType="multipart/formData"
+          className="flex flex-col gap-6"
+        >
+          <div>
             <label htmlFor="name">Name: </label>
             <input
               type="text"
@@ -165,7 +169,7 @@ const EditBlog = () => {
             <div className="form-error px-4 text-red-500">{errors.name}</div>
           ) : null}
 
-          <div className="p-4">
+          <div>
             <label htmlFor="description">Description: </label>
             <textarea
               name="description"
@@ -185,7 +189,7 @@ const EditBlog = () => {
             </div>
           ) : null}
 
-          <div className="p-4">
+          <div>
             <label htmlFor="image">Image: </label>
             <input
               type="file"
@@ -195,7 +199,7 @@ const EditBlog = () => {
             />
           </div>
 
-          <div className="p-4 flex">
+          <div className="flex">
             <label htmlFor="category">Category: </label>
 
             <div>
@@ -219,13 +223,13 @@ const EditBlog = () => {
               </select>
             </div>
           </div>
-          {errors.category && touched.category ? (
+          {typeof errors.category === "string" && touched.category ? (
             <div className="form-error px-4 text-red-500">
               {errors.category}
             </div>
           ) : null}
 
-          <div className="p-4 flex">
+          <div className="flex">
             <label htmlFor="tag" className="pr-2">
               Tags:{" "}
             </label>
@@ -254,20 +258,20 @@ const EditBlog = () => {
               ))}
             {/* </select> */}
           </div>
-          {errors.tag && touched.tag ? (
+          {typeof errors.tag === "string" && touched.tag ? (
             <div className="form-error px-4 text-red-500">{errors.tag}</div>
           ) : null}
 
           <button
             type="submit"
-            className="bg-slate-400 px-4 py-2 rounded-md m-4"
+            className="bg-slate-400 px-4 py-2 rounded-md hover:bg-slate-400/85 text-white w-fit"
           >
             Edit Blog
           </button>
         </form>
 
         <form action="" onSubmit={handleTag}>
-          <div className="p-4">
+          <div className="py-4 flex flex-col">
             <label htmlFor="addTag">Add Tag: </label>
             <input
               type="text"
@@ -279,7 +283,7 @@ const EditBlog = () => {
           </div>
           <button
             type="submit"
-            className="bg-slate-400 px-4 py-2 rounded-md mx-4"
+            className="bg-slate-400 px-4 py-2 rounded-md hover:bg-slate-400/85 text-white"
           >
             Add Tag
           </button>

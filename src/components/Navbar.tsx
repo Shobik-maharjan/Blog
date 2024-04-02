@@ -4,20 +4,15 @@ const Navbar = () => {
   return (
     <>
       <nav className="py-4 w-full">
-        <div className="flex justify-between">
-          <div className="logo">
-            <Link to="/blog">Blog</Link>
+        <div className="flex justify-between uppercase">
+          <div className="logo text-xl">
+            <Link to="/admin">Blog</Link>
           </div>
-          <ul className="flex gap-4">
-            <li>
-              <Link to="/blog">Home</Link>
-            </li>
-            <li>
-              <Link to="/contact">Contact</Link>
-            </li>
-          </ul>
+          <div className="flex gap-4">
+            <Link to="/admin">Home</Link>
+          </div>
           <div>
-            <Link to="/blog/add-blog">Add Blog</Link>
+            <Link to="add-blog">Add Blog</Link>
           </div>
         </div>
       </nav>

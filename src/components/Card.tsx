@@ -56,13 +56,13 @@ const Card = ({
           </Link>
           <div className="flex">
             <button
-              className="button px-3 py-1 rounded-md bg-slate-400 mr-2"
+              className="button px-3 py-1 rounded-md bg-slate-400 mr-2 hover:bg-slate-400/85 text-white"
               onClick={() => handleEditBlog(blog_id)}
             >
               Edit
             </button>
             <button
-              className="button px-2 rounded-md bg-red-500 mx-2"
+              className="button px-2 rounded-md bg-red-500 mx-2 hover:bg-red-500/85 text-white"
               onClick={() => handleDeleteBlog(blog_id)}
             >
               Delete

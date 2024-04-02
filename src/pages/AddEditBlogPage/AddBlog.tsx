@@ -118,9 +118,14 @@ const AddBlog = () => {
 
   return (
     <>
-      <div className="w-full">
-        <form action="" onSubmit={handleSubmit} encType="multipart/formData">
-          <div className="p-4">
+      <div className="w-full mt-4">
+        <form
+          action=""
+          onSubmit={handleSubmit}
+          encType="multipart/formData"
+          className="flex flex-col gap-6"
+        >
+          <div>
             <label htmlFor="name">Name: </label>
             <input
               type="text"
@@ -139,7 +144,7 @@ const AddBlog = () => {
             ) : null}
           </div>
 
-          <div className="p-4">
+          <div>
             <label htmlFor="description">Description: </label>
             <textarea
               name="description"
@@ -161,7 +166,7 @@ const AddBlog = () => {
             ) : null}
           </div>
 
-          <div className="p-4 flex">
+          <div className="flex">
             <label htmlFor="category">Category: </label>
 
             <select
@@ -173,15 +178,13 @@ const AddBlog = () => {
               <option value="">Select category</option>
               {categoryList &&
                 categoryList.map((item: any) => (
-                  <>
-                    <option
-                      value={item.id}
-                      className="border border-black"
-                      key={item.id}
-                    >
-                      {item.category}
-                    </option>
-                  </>
+                  <option
+                    value={item.id}
+                    className="border border-black"
+                    key={item.id}
+                  >
+                    {item.category}
+                  </option>
                 ))}
             </select>
           </div>
@@ -191,15 +194,10 @@ const AddBlog = () => {
             </div>
           ) : null}
 
-          <div className="p-4 flex">
+          <div className="flex">
             <label htmlFor="tag" className="pr-2">
               Tags:
             </label>
-            {/* <select
-              name=""
-              id=""
-              onClick={(e: any) => setTagId(e.target.value)}
-            > */}
             {tagList &&
               tagList.map((item: any) => (
                 <div key={item.id}>
@@ -215,9 +213,7 @@ const AddBlog = () => {
                     onChange={handleChange}
                   />
                 </div>
-                // <option value={item.id}>{item.tag}</option>
               ))}
-            {/* </select> */}
           </div>
           {errors.tag && touched.tag ? (
             <div className="form-error px-4 text-red-500">{errors.tag}</div>
@@ -226,7 +222,7 @@ const AddBlog = () => {
           <button
             type="submit"
             disabled={isSubmitting}
-            className={`bg-slate-400 px-4 py-2 rounded-md m-4 ${
+            className={`bg-slate-400 px-4 py-2 w-fit rounded-md hover:bg-slate-400/85 text-white ${
               isSubmitting ? "bg-slate-400/25 cursor-not-allowed" : ""
             }`}
           >
@@ -235,7 +231,7 @@ const AddBlog = () => {
         </form>
 
         <form action="" onSubmit={handleTag}>
-          <div className="p-4">
+          <div className="py-4 flex flex-col">
             <label htmlFor="addTag">Add Tag: </label>
             <input
               type="text"
@@ -246,7 +242,7 @@ const AddBlog = () => {
           </div>
           <button
             type="submit"
-            className="bg-slate-400 px-4 py-2 rounded-md mx-4"
+            className="bg-slate-400 px-4 py-2 rounded-md hover:bg-slate-400/85 text-white"
           >
             Add Tag
           </button>

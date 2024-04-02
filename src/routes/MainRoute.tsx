@@ -10,13 +10,12 @@ const MainRoute = () => {
     <>
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<ClinetLayout />}>
-            <Route path="blog/*" element={<BlogRoute />} />
-            <Route path="contact/*" element={<p>On Contact</p>} />
-          </Route>
-
           <Route path="admin/*" element={<AdminLayout />}>
             <Route path="*" element={<AdminRoute />} />
+          </Route>
+
+          <Route path="/*" element={<ClinetLayout />}>
+            <Route path="*" element={<BlogRoute />} />
           </Route>
 
           <Route path="*" element={<h1>Not Found</h1>} />
