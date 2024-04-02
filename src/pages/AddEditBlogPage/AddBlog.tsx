@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import {
   createBlog,
+  createCategory,
   createTag,
   getCategory,
   getTagName,
@@ -24,6 +25,8 @@ const AddBlog = () => {
   // const [tagId, setTagId] = useState<any[]>([]);
   // const [error, setError] = useState<any>("");
   const [tag, setTag] = useState<any>("");
+  const [category, setCategory] = useState<any>("");
+  const [additionalDescriptions, setAdditionalDescriptions]: any = useState([]);
 
   const { categoryList, tagList } = useSelector((state: any) => state.blogList);
 
@@ -41,10 +44,13 @@ const AddBlog = () => {
     onSubmit: async (values, actions) => {
       const { name, description, category, tag } = values;
 
+      const allDescriptions = [description, ...additionalDescriptions];
+      console.log("🚀 ~ onSubmit: ~ allDescriptions:", allDescriptions);
+
       dispatch(
         createBlog({
           name: name,
-          description: description,
+          description: allDescriptions,
           category_id: category,
           tagId: tag,
         })
@@ -105,6 +111,30 @@ const AddBlog = () => {
     }
   };
 
+  const handleCategory = (e: any) => {
+    try {
+      e.preventDefault();
+      dispatch(createCategory({ category: category }));
+    } catch (e: any) {
+      console.log(e.response.data.message);
+    }
+  };
+
+  const handleAddDescription = () => {
+    setAdditionalDescriptions([...additionalDescriptions, ""]);
+  };
+  const handleRemoveDescription = (index: any) => {
+    const newDesscriptions = [...additionalDescriptions];
+    newDesscriptions.splice(index, 1);
+    setAdditionalDescriptions(newDesscriptions);
+  };
+
+  const handleAdditionalDescriptionChange = (index: number, value: any) => {
+    const newDesscriptions = [...additionalDescriptions];
+    newDesscriptions[index] = value;
+    setAdditionalDescriptions(newDesscriptions);
+  };
+
   // const handleTagChange = (e: any) => {
   //   const { value, checked } = e.target;
   //   if (checked) {
@@ -117,138 +147,184 @@ const AddBlog = () => {
   // };
 
   return (
-    <>
-      <div className="w-full mt-4">
-        <form
-          action=""
-          onSubmit={handleSubmit}
-          encType="multipart/formData"
-          className="flex flex-col gap-6"
-        >
-          <div>
-            <label htmlFor="name">Name: </label>
-            <input
-              type="text"
-              name="name"
-              id="name"
-              value={values.name}
-              onChange={handleChange}
-              onBlur={handleBlur}
-              className={`border p-2 w-full ${
-                errors.name ? "border-red-500" : "border-black"
-              }`}
-              // onChange={(e) => setName(e.target.value)}
-            />
-            {errors.name && touched.name ? (
-              <div className="form-error text-red-500">{errors.name}</div>
-            ) : null}
-          </div>
+    <div className="w-full py-7">
+      <form
+        action=""
+        onSubmit={handleSubmit}
+        encType="multipart/formData"
+        className="flex flex-col gap-6"
+      >
+        <div>
+          <label htmlFor="name">Name: </label>
+          <input
+            type="text"
+            name="name"
+            id="name"
+            value={values.name}
+            onChange={handleChange}
+            onBlur={handleBlur}
+            className={`border border-black p-2 w-full`}
+            // onChange={(e) => setName(e.target.value)}
+          />
+          {errors.name && touched.name ? (
+            <div className="form-error text-red-500">{errors.name}</div>
+          ) : null}
+        </div>
 
-          <div>
-            <label htmlFor="description">Description: </label>
-            <textarea
-              name="description"
-              id="description"
-              rows={5}
-              // value={description}
-              value={values.description}
-              onChange={handleChange}
-              onBlur={handleBlur}
-              className={`border p-2 w-full ${
-                errors.name ? "border-red-500" : "border-black"
-              }`}
-              // onChange={(e) => setDescription(e.target.value)}
-            ></textarea>
-            {errors.description && touched.description ? (
-              <div className="form-error text-red-500">
-                {errors.description}
-              </div>
-            ) : null}
-          </div>
-
-          <div className="flex">
-            <label htmlFor="category">Category: </label>
-
-            <select
-              name="category"
-              id="category"
-              // onClick={(e: any) => setCategoryId(e.target.value)}
-              onClick={handleChange}
-            >
-              <option value="">Select category</option>
-              {categoryList &&
-                categoryList.map((item: any) => (
-                  <option
-                    value={item.id}
-                    className="border border-black"
-                    key={item.id}
-                  >
-                    {item.category}
-                  </option>
-                ))}
-            </select>
-          </div>
-          {errors.category && touched.category ? (
-            <div className="form-error px-4 text-red-500">
-              {errors.category}
+        <div>
+          <label htmlFor="description">Description: </label>
+          <textarea
+            name="description"
+            id="description"
+            rows={5}
+            // value={description}
+            value={values.description}
+            onChange={handleChange}
+            onBlur={handleBlur}
+            className={`border border-black p-2 w-full`}
+            // onChange={(e) => setDescription(e.target.value)}
+          ></textarea>
+          {additionalDescriptions.map((description: string, index: number) => (
+            <div>
+              <label htmlFor="additionalDescription">
+                Additional Description:
+              </label>
+              <textarea
+                name={`description`}
+                id={`additionalDescription${index + 1}`}
+                rows={5}
+                value={description}
+                onChange={(e) =>
+                  handleAdditionalDescriptionChange(index, e.target.value)
+                }
+                onBlur={handleBlur}
+                className={`border border-black p-2 w-full`}
+              ></textarea>
             </div>
+          ))}
+          {errors.description && touched.description ? (
+            <div className="form-error text-red-500">{errors.description}</div>
           ) : null}
+          <div className="flex gap-4">
+            <button
+              type="button"
+              onClick={handleAddDescription}
+              className="bg-slate-400 px-4 py-2 rounded-md hover:bg-slate-400/85 text-white"
+            >
+              Add Description
+            </button>
+            {additionalDescriptions.length > 0 ? (
+              <button
+                type="button"
+                className="bg-slate-400 px-4 py-2 rounded-md hover:bg-slate-400/85 text-white"
+                onClick={handleRemoveDescription}
+              >
+                Remove Description
+              </button>
+            ) : (
+              ""
+            )}
+          </div>
+        </div>
 
-          <div className="flex">
-            <label htmlFor="tag" className="pr-2">
-              Tags:
-            </label>
-            {tagList &&
-              tagList.map((item: any) => (
-                <div key={item.id}>
-                  <label htmlFor={item.tag} className="pr-1">
-                    {item.tag}
-                  </label>
-                  <input
-                    type="checkbox"
-                    name="tag"
-                    id="tag"
-                    value={item.id}
-                    className="mr-4"
-                    onChange={handleChange}
-                  />
-                </div>
+        <div className="flex">
+          <label htmlFor="category">Category: </label>
+
+          <select
+            name="category"
+            id="category"
+            // onClick={(e: any) => setCategoryId(e.target.value)}
+            onClick={handleChange}
+          >
+            <option value="">Select category</option>
+            {categoryList &&
+              categoryList.map((item: any) => (
+                <option
+                  value={item.id}
+                  className="border border-black"
+                  key={item.id}
+                >
+                  {item.category}
+                </option>
               ))}
-          </div>
-          {errors.tag && touched.tag ? (
-            <div className="form-error px-4 text-red-500">{errors.tag}</div>
-          ) : null}
+          </select>
+        </div>
+        {errors.category && touched.category ? (
+          <div className="form-error px-4 text-red-500">{errors.category}</div>
+        ) : null}
 
-          <button
-            type="submit"
-            disabled={isSubmitting}
-            className={`bg-slate-400 px-4 py-2 w-fit rounded-md hover:bg-slate-400/85 text-white ${
-              isSubmitting ? "bg-slate-400/25 cursor-not-allowed" : ""
-            }`}
-          >
-            Add Blog
-          </button>
-        </form>
+        <div className="flex">
+          <label htmlFor="tag" className="pr-2">
+            Tags:
+          </label>
+          {tagList &&
+            tagList.map((item: any) => (
+              <div key={item.id}>
+                <label htmlFor={item.tag} className="pr-1">
+                  {item.tag}
+                </label>
+                <input
+                  type="checkbox"
+                  name="tag"
+                  id="tag"
+                  value={item.id}
+                  className="mr-4"
+                  onChange={handleChange}
+                />
+              </div>
+            ))}
+        </div>
+        {errors.tag && touched.tag ? (
+          <div className="form-error px-4 text-red-500">{errors.tag}</div>
+        ) : null}
 
-        <form action="" onSubmit={handleTag}>
-          <div className="py-4 flex flex-col">
-            <label htmlFor="addTag">Add Tag: </label>
-            <input
-              type="text"
-              name="addTag"
-              className="border border-black p-2"
-              onChange={(e: any) => setTag(e.target.value)}
-            />
-          </div>
-          <button
-            type="submit"
-            className="bg-slate-400 px-4 py-2 rounded-md hover:bg-slate-400/85 text-white"
-          >
-            Add Tag
-          </button>
-        </form>
-      </div>
-    </>
+        <button
+          type="submit"
+          disabled={isSubmitting}
+          className={`bg-slate-400 px-4 py-2 w-fit rounded-md hover:bg-slate-400/85 text-white ${
+            isSubmitting ? "bg-slate-400/25 cursor-not-allowed" : ""
+          }`}
+        >
+          Add Blog
+        </button>
+      </form>
+
+      <form action="" onSubmit={handleTag}>
+        <div className="py-4 flex flex-col">
+          <label htmlFor="addTag">Add Tag: </label>
+          <input
+            type="text"
+            name="addTag"
+            className="border border-black p-2"
+            onChange={(e: any) => setTag(e.target.value)}
+          />
+        </div>
+        <button
+          type="submit"
+          className="bg-slate-400 px-4 py-2 rounded-md hover:bg-slate-400/85 text-white"
+        >
+          Add Tag
+        </button>
+      </form>
+
+      <form action="" onSubmit={handleCategory}>
+        <div className="py-4 flex flex-col">
+          <label htmlFor="addTag">Add Category: </label>
+          <input
+            type="text"
+            name="addTag"
+            className="border border-black p-2"
+            onChange={(e: any) => setCategory(e.target.value)}
+          />
+        </div>
+        <button
+          type="submit"
+          className="bg-slate-400 px-4 py-2 rounded-md hover:bg-slate-400/85 text-white"
+        >
+          Add Category
+        </button>
+      </form>
+    </div>
   );
 };
 

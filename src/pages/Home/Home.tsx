@@ -32,16 +32,19 @@ const Home = () => {
           <div className="flex">
             <div className="grid grid-cols-3 xl:grid-cols-4 gap-2">
               {blog &&
-                blog.map((item: any) => (
-                  <Card
-                    image={item.image}
-                    tag={item.tags.map((tag: any) => "#" + tag.tag + " ")}
-                    name={item.name}
-                    description={item.description}
-                    blog_id={item.id}
-                    key={item.id}
-                  />
-                ))}
+                blog
+                  .slice()
+                  .reverse()
+                  .map((item: any) => (
+                    <Card
+                      image={item.image}
+                      tag={item.tags.map((tag: any) => "#" + tag.tag + " ")}
+                      name={item.name}
+                      description={item.description}
+                      blog_id={item.id}
+                      key={item.id}
+                    />
+                  ))}
 
               {/* <> */}
               {/* <div className="p-2 min-h-96 flex border rounded-md justify-center shadow-md">

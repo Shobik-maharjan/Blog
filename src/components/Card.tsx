@@ -4,7 +4,6 @@ import { deleteblog } from "../redux/actions/blogActions";
 
 const Card = ({
   image,
-  tag,
   name,
   description,
   blog_id,
@@ -27,7 +26,6 @@ const Card = ({
 
   const handleEditBlog = (id: any) => {
     navigate(`edit-blog/${id}`);
-    // dispatch();
   };
 
   return (
@@ -45,12 +43,11 @@ const Card = ({
               </div>
 
               <div className="w-full flex flex-col gap-2 min-h-40">
-                <span className="text-blue-500">
+                {/* <span className="text-blue-500">
                   {tag}
-                  {/* {item.tags.map((tag: any) => "#" + tag.tag + " ")} */}
-                </span>
-                <h2 className="font-semibold text-xl">{name.slice(0, 10)}</h2>
-                <p>{description.slice(0, 60)}</p>
+                </span> */}
+                <h2 className="font-semibold text-lg">{name.slice(0, 35)}</h2>
+                <p>{description.slice(0, 70)}</p>
               </div>
             </div>
           </Link>

@@ -2,7 +2,6 @@ import { Link } from "react-router-dom";
 
 const UserCard = ({
   image,
-  tag,
   name,
   description,
   blog_id,
@@ -30,12 +29,11 @@ const UserCard = ({
               </div>
 
               <div className="w-full flex flex-col gap-2">
-                <span className="text-blue-500">
+                {/* <span className="text-blue-500">
                   {tag}
-                  {/* {item.tags.map((tag: any) => "#" + tag.tag + " ")} */}
-                </span>
-                <h2 className="font-semibold text-xl">{name.slice(0, 10)}</h2>
-                <p>{description.slice(0, 60)}</p>
+                </span> */}
+                <h2 className="font-semibold text-lg">{name.slice(0, 35)}</h2>
+                <p>{description.slice(0, 70)}</p>
               </div>
             </div>
           </Link>

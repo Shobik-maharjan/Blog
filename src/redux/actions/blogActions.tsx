@@ -141,6 +141,20 @@ export const createTag =
     }
   };
 
+export const createCategory =
+  ({ category }: { category: any }) =>
+  async () => {
+    try {
+      await axios.post(`${api}/create/category`, {
+        category,
+      });
+      toast.success("Category added successfully");
+      console.log("Category added");
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
 export const getCategory = () => async (dispatch: any) => {
   try {
     const res = await axios.get(`${api}/category`);
