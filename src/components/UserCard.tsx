@@ -33,7 +33,7 @@ const UserCard = ({
                   {tag}
                 </span> */}
                 <h2 className="font-semibold text-lg">{name.slice(0, 35)}</h2>
-                <p>{description.slice(0, 70)}</p>
+                <p>{description?.slice(0, 70)}</p>
               </div>
             </div>
           </Link>

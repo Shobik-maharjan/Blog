@@ -9,7 +9,7 @@ const ClinetLayout = () => {
         <UserNavbar />
         <Outlet />
       </div>
-      <div className="bg-slate-100">
+      <div className="bg-slate-100 sticky">
         <Footer />
       </div>
     </div>

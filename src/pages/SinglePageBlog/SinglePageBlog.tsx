@@ -42,7 +42,7 @@ const SinglePageBlog = () => {
             />
           </div>
           <div className="desctiprion">
-            {singleBlog.description.map((item: any) => (
+            {singleBlog?.description?.map((item: any) => (
               <p className="py-1">{item}</p>
             ))}
           </div>

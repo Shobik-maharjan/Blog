@@ -129,27 +129,30 @@ export const deleteblog =
 
 export const createTag =
   ({ tag }: { tag: any }) =>
-  async () => {
+  async (dispatch: any) => {
     try {
       await axios.post(`${api}/create/tag`, {
         tag,
       });
       toast.success("Tag added successfully");
       console.log("tag added");
+      dispatch(getTagName());
     } catch (e) {
+      toast.error("The Tag has already taken");
       console.log(e);
     }
   };
 
 export const createCategory =
   ({ category }: { category: any }) =>
-  async () => {
+  async (dispatch: any) => {
     try {
       await axios.post(`${api}/create/category`, {
         category,
       });
       toast.success("Category added successfully");
       console.log("Category added");
+      dispatch(getCategory());
     } catch (e) {
       console.log(e);
     }

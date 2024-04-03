@@ -72,6 +72,7 @@ const EditBlog = () => {
       );
     },
   });
+  console.log("🚀 ~ EditBlog ~ values:", values);
 
   useEffect(() => {
     setValues({
@@ -163,13 +164,13 @@ const EditBlog = () => {
     setAdditionalDescriptions(newDesscriptions);
   };
 
-  const removeAfterComma = (str: any, i: any) => {
-    const splitStr = str.split(",");
-    return splitStr[i];
-  };
+  // const removeAfterComma = (str: any, i: any) => {
+  //   const splitStr = str.split(",");
+  //   return splitStr[i];
+  // };
 
   return (
-    <div className="py-7">
+    <div className="py-7 w-full">
       <form
         action=""
         onSubmit={handleSubmit}

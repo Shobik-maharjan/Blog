@@ -106,6 +106,7 @@ const AddBlog = () => {
     try {
       e.preventDefault();
       dispatch(createTag({ tag: tag }));
+      setTag("");
     } catch (e: any) {
       console.log(e.response.data.message);
     }
@@ -115,6 +116,7 @@ const AddBlog = () => {
     try {
       e.preventDefault();
       dispatch(createCategory({ category: category }));
+      setCategory("");
     } catch (e: any) {
       console.log(e.response.data.message);
     }
@@ -185,7 +187,7 @@ const AddBlog = () => {
             // onChange={(e) => setDescription(e.target.value)}
           ></textarea>
           {additionalDescriptions.map((description: string, index: number) => (
-            <div>
+            <div key={index}>
               <label htmlFor="additionalDescription">
                 Additional Description:
               </label>
@@ -295,6 +297,7 @@ const AddBlog = () => {
           <input
             type="text"
             name="addTag"
+            value={tag}
             className="border border-black p-2"
             onChange={(e: any) => setTag(e.target.value)}
           />
