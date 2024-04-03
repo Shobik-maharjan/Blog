@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import { getSingleBlog } from "../../redux/actions/blogActions";
+import HTMLReactParser from "html-react-parser/lib/index";
 
 const SinglePageBlog = () => {
   const blogId = useParams();
@@ -36,15 +37,20 @@ const SinglePageBlog = () => {
           </div>
           <div className="image my-4">
             <img
-              src={`${storage_api}/${singleBlog.image}`}
+              src={
+                singleBlog.image !== null
+                  ? `${storage_api}/${singleBlog.image}`
+                  : `https://img.freepik.com/premium-vector/default-image-icon-vector-missing-picture-page-website-design-mobile-app-no-photo-available_87543-11093.jpg?w=360`
+              }
               alt=""
               className="rounded-md w-8/12 mx-auto"
             />
           </div>
-          <div className="desctiprion">
-            {singleBlog?.description?.map((item: any) => (
+          <div className="desctiprion ql-editor">
+            {HTMLReactParser(singleBlog.description)}
+            {/* {singleBlog?.description?.map((item: any) => (
               <p className="py-1">{item}</p>
-            ))}
+            ))} */}
           </div>
         </div>
       )}

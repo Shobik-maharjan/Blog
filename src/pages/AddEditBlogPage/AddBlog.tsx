@@ -9,24 +9,16 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import { useFormik } from "formik";
 import { addBlogSchema } from "src/schemas";
-
-const initialValues = {
-  name: "",
-  description: "",
-  category: "",
-  tag: [],
-};
+import ReactQuill from "react-quill";
+import TextEditorToolbarOptions from "src/components/TextEditorToolbarOptions";
+import Select from "react-select";
+import makeAnimated from "react-select/animated";
 
 const AddBlog = () => {
   const dispatch: any = useDispatch();
-  // const [name, setName] = useState<any>("");
-  // const [description, setDescription] = useState<any>("");
-  // const [categoryId, setCategoryId] = useState<any>("");
-  // const [tagId, setTagId] = useState<any[]>([]);
-  // const [error, setError] = useState<any>("");
   const [tag, setTag] = useState<any>("");
   const [category, setCategory] = useState<any>("");
-  const [additionalDescriptions, setAdditionalDescriptions]: any = useState([]);
+  const [value, setValue] = useState("");
 
   const { categoryList, tagList } = useSelector((state: any) => state.blogList);
 
@@ -37,70 +29,42 @@ const AddBlog = () => {
     touched,
     handleBlur,
     handleChange,
+    setFieldValue,
     handleSubmit,
   } = useFormik({
-    initialValues: initialValues,
+    initialValues: {
+      name: "",
+      description: "",
+      category: "",
+      tag: [],
+    },
     validationSchema: addBlogSchema,
     onSubmit: async (values, actions) => {
       const { name, description, category, tag } = values;
 
-      const allDescriptions = [description, ...additionalDescriptions];
-      console.log("🚀 ~ onSubmit: ~ allDescriptions:", allDescriptions);
-
       dispatch(
         createBlog({
           name: name,
-          description: allDescriptions,
+          description: description,
           category_id: category,
           tagId: tag,
         })
       );
       actions.resetForm();
+      setValue("");
     },
   });
+  console.log("🚀 ~ onSubmit: ~ category:", values.category);
 
+  const animatedComponents = makeAnimated();
   useEffect(() => {
     dispatch(getCategory());
     dispatch(getTagName());
   }, []);
 
-  // const handleSubmit = async (e: any) => {
-  //   try {
-  //     e.preventDefault();
-  //     console.log("submit clicked");
-
-  //     if (name && description && categoryId && tagId) {
-  //       setError("");
-  //       dispatch(
-  //         createBlog({
-  //           name: name,
-  //           description: description,
-  //           category_id: categoryId,
-  //           tagId: tagId,
-  //         })
-  //       );
-  //     } else {
-  //       setError("All field are required");
-  //     }
-  //   } catch (e: any) {
-  //     console.log(e.response.data.message);
-  //   }
-  //   console.log(error);
-  //   // try {
-  //   //   const formData = new FormData();
-  //   //   formData.append("image", image);
-
-  //   //   console.log(formData);
-  //   //   const response = await axios.post(`${api}/add/image`, formData, {
-  //   //     headers: {
-  //   //       "Content-Type": "multipart/form-data",
-  //   //     },
-  //   //   });
-  //   //   console.log("Image uploaded successfully:", response.data);
-  //   // } catch (error) {
-  //   //   console.error("Error uploading image:", error);
-  //   // }
-  // };
+  useEffect(() => {
+    setFieldValue("description", value);
+  }, [value]);
 
   const handleTag = async (e: any) => {
     try {
@@ -122,31 +86,25 @@ const AddBlog = () => {
     }
   };
 
-  const handleAddDescription = () => {
-    setAdditionalDescriptions([...additionalDescriptions, ""]);
-  };
-  const handleRemoveDescription = (index: any) => {
-    const newDesscriptions = [...additionalDescriptions];
-    newDesscriptions.splice(index, 1);
-    setAdditionalDescriptions(newDesscriptions);
-  };
+  console.log(values.category);
 
-  const handleAdditionalDescriptionChange = (index: number, value: any) => {
-    const newDesscriptions = [...additionalDescriptions];
-    newDesscriptions[index] = value;
-    setAdditionalDescriptions(newDesscriptions);
-  };
+  const categoryOptions =
+    categoryList &&
+    categoryList?.flatMap((item: any) => [
+      {
+        value: item.id,
+        label: item.category,
+      },
+    ]);
 
-  // const handleTagChange = (e: any) => {
-  //   const { value, checked } = e.target;
-  //   if (checked) {
-  //     // If checkbox is checked, add the tag ID to the array
-  //     setTagId([...tagId, value]);
-  //   } else {
-  //     // If checkbox is unchecked, remove the tag ID from the array
-  //     setTagId(tagId.filter((id: any) => id !== value));
-  //   }
-  // };
+  const tagOptions =
+    tagList &&
+    tagList?.flatMap((item: any) => [
+      {
+        value: item.id,
+        label: item.tag,
+      },
+    ]);
 
   return (
     <div className="w-full py-7">
@@ -165,7 +123,7 @@ const AddBlog = () => {
             value={values.name}
             onChange={handleChange}
             onBlur={handleBlur}
-            className={`border border-black p-2 w-full`}
+            className={`border border-black p-2 w-full rounded-md`}
             // onChange={(e) => setName(e.target.value)}
           />
           {errors.name && touched.name ? (
@@ -175,7 +133,16 @@ const AddBlog = () => {
 
         <div>
           <label htmlFor="description">Description: </label>
-          <textarea
+          <div className="text-editor py-4">
+            <ReactQuill
+              modules={TextEditorToolbarOptions()}
+              theme="snow"
+              value={value}
+              onChange={setValue}
+            />
+          </div>
+          <div>
+            {/* <textarea
             name="description"
             id="description"
             rows={5}
@@ -185,8 +152,8 @@ const AddBlog = () => {
             onBlur={handleBlur}
             className={`border border-black p-2 w-full`}
             // onChange={(e) => setDescription(e.target.value)}
-          ></textarea>
-          {additionalDescriptions.map((description: string, index: number) => (
+          ></textarea> 
+           {additionalDescriptions.map((description: string, index: number) => (
             <div key={index}>
               <label htmlFor="additionalDescription">
                 Additional Description:
@@ -226,13 +193,22 @@ const AddBlog = () => {
             ) : (
               ""
             )}
+          </div> */}
           </div>
         </div>
 
-        <div className="flex">
-          <label htmlFor="category">Category: </label>
+        <div className="flex items-center gap-4">
+          <label htmlFor="category">Category:</label>
+          <Select
+            className="min-w-40 max-w-fit"
+            components={animatedComponents}
+            options={categoryOptions}
+            name="category"
+            value={values.category}
+            onChange={handleChange}
+          />
 
-          <select
+          {/* <select
             name="category"
             id="category"
             // onClick={(e: any) => setCategoryId(e.target.value)}
@@ -249,17 +225,23 @@ const AddBlog = () => {
                   {item.category}
                 </option>
               ))}
-          </select>
+          </select> */}
         </div>
         {errors.category && touched.category ? (
           <div className="form-error px-4 text-red-500">{errors.category}</div>
         ) : null}
 
-        <div className="flex">
-          <label htmlFor="tag" className="pr-2">
-            Tags:
-          </label>
-          {tagList &&
+        <div className="flex items-center gap-4">
+          <label htmlFor="tag">Tags:</label>
+          <Select
+            className="min-w-40 max-w-fit"
+            components={animatedComponents}
+            options={tagOptions}
+            name="tag"
+            onChange={handleChange}
+            isMulti
+          />
+          {/* {tagList &&
             tagList.map((item: any) => (
               <div key={item.id}>
                 <label htmlFor={item.tag} className="pr-1">
@@ -274,7 +256,7 @@ const AddBlog = () => {
                   onChange={handleChange}
                 />
               </div>
-            ))}
+            ))} */}
         </div>
         {errors.tag && touched.tag ? (
           <div className="form-error px-4 text-red-500">{errors.tag}</div>
@@ -298,7 +280,7 @@ const AddBlog = () => {
             type="text"
             name="addTag"
             value={tag}
-            className="border border-black p-2"
+            className="border border-black p-2 rounded-md"
             onChange={(e: any) => setTag(e.target.value)}
           />
         </div>
@@ -316,7 +298,7 @@ const AddBlog = () => {
           <input
             type="text"
             name="addTag"
-            className="border border-black p-2"
+            className="border border-black p-2 rounded-md"
             onChange={(e: any) => setCategory(e.target.value)}
           />
         </div>

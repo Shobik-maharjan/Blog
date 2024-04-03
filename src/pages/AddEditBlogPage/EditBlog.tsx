@@ -10,17 +10,20 @@ import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import { useFormik } from "formik";
 import { addBlogSchema } from "src/schemas";
+import ReactQuill from "react-quill";
+import TextEditorToolbarOptions from "src/components/TextEditorToolbarOptions";
 
 const EditBlog = () => {
   const dispatch: any = useDispatch();
 
-  const [prevName, setName] = useState<any>("");
+  // const [prevName, setName] = useState<any>("");
   const [image, setImage] = useState<any>();
-  const [description, setDescription] = useState<any>([]);
+  // const [description, setDescription] = useState<any>([]);
   const [category, setCategory] = useState<any>("");
   const [tag, setTag] = useState<any>("");
   const [tagId, setTagId] = useState<any[]>([]);
-  const [additionalDescriptions, setAdditionalDescriptions]: any = useState([]);
+  // const [additionalDescriptions, setAdditionalDescriptions]: any = useState([]);
+  const [value, setValue] = useState("");
 
   const blogId = useParams<any>();
   const blog_id = blogId.blog_id;
@@ -29,16 +32,6 @@ const EditBlog = () => {
   );
   const formData = new FormData();
   formData.append("image", image);
-
-  const initialValues = {
-    name: prevName,
-    description: description,
-    category: category,
-    tag: tagId,
-    image: formData,
-  };
-
-  console.log(description);
 
   const {
     values,
@@ -49,21 +42,25 @@ const EditBlog = () => {
     handleChange,
     handleSubmit,
   } = useFormik({
-    initialValues,
+    initialValues: {
+      name: "",
+      description: "",
+      category: "",
+      tag: "",
+      image: "",
+    },
     validationSchema: addBlogSchema,
     onSubmit: (values) => {
-      const { name, description, category, tag } = values;
+      const { name, category, tag } = values;
       const formData: any = new FormData();
       formData.append("image", image);
 
-      console.log("clicked");
-
-      const allDescriptions = [description, ...additionalDescriptions];
+      // const allDescriptions = [description, ...additionalDescriptions];
 
       dispatch(
         editSingleBlog({
           name: name,
-          description: allDescriptions,
+          description: value,
           category_id: category,
           tagId: tag,
           id: blog_id,
@@ -74,54 +71,38 @@ const EditBlog = () => {
   });
   console.log("🚀 ~ EditBlog ~ values:", values);
 
-  useEffect(() => {
-    setValues({
-      ...values,
-      name: prevName,
-      description: description,
-      category: category,
-      tag: tagId,
-    });
-  }, [prevName, description, category, tagId]);
+  console.log("🚀 ~ EditBlog ~ description:", values.description);
 
   useEffect(() => {
     if (singleBlog) {
-      setName(singleBlog.name);
-      setDescription(singleBlog.description);
-      setCategory(singleBlog.category_id);
-      // setImage(singleBlog.image);
-      // setPrevTagId();
-      setTagId(singleBlog.tags.map((tag: any) => tag.id));
+      setValue(singleBlog.description);
+      setValues({
+        ...values,
+        name: singleBlog.name,
+        description: singleBlog.description,
+        category: singleBlog.category_id,
+        tag: singleBlog.tags.map((tag: any) => tag.id),
+      });
     }
   }, [singleBlog]);
+  console.log("🚀 ~ useEffect ~ description:", values.description);
+
+  // useEffect(() => {
+  //   if (singleBlog) {
+  //     setName(singleBlog.name);
+  //     setDescription(singleBlog.description);
+  //     setCategory(singleBlog.category_id);
+  //     // setImage(singleBlog.image);
+  //     // setPrevTagId();
+  //     setTagId(singleBlog.tags.map((tag: any) => tag.id));
+  //   }
+  // }, [singleBlog]);
 
   useEffect(() => {
     dispatch(getCategory());
     dispatch(getTagName());
     dispatch(getSingleBlog({ id: blog_id }));
   }, []);
-
-  // const handleSubmit = async (e: any) => {
-  //   try {
-  //     e.preventDefault();
-
-  //     const formData = new FormData();
-  //     formData.append("image", image);
-
-  //     dispatch(
-  //       editSingleBlog({
-  //         name: name,
-  //         description: description,
-  //         category_id: category,
-  //         tagId: tagId,
-  //         id: blog_id,
-  //         formData: formData,
-  //       })
-  //     );
-  //   } catch (e: any) {
-  //     console.log(e.response.data.message);
-  //   }
-  // };
 
   const handleTag = async (e: any) => {
     try {
@@ -149,20 +130,20 @@ const EditBlog = () => {
     }
   };
 
-  const handleAddDescription = () => {
-    setAdditionalDescriptions([...additionalDescriptions, ""]);
-  };
-  const handleRemoveDescription = () => {
-    const newDesscriptions = [...additionalDescriptions];
-    newDesscriptions.pop();
-    setAdditionalDescriptions(newDesscriptions);
-  };
+  // const handleAddDescription = () => {
+  //   setAdditionalDescriptions([...additionalDescriptions, ""]);
+  // };
+  // const handleRemoveDescription = () => {
+  //   const newDesscriptions = [...additionalDescriptions];
+  //   newDesscriptions.pop();
+  //   setAdditionalDescriptions(newDesscriptions);
+  // };
 
-  const handleAdditionalDescriptionChange = (index: number, value: any) => {
-    const newDesscriptions = [...additionalDescriptions];
-    newDesscriptions[index] = value;
-    setAdditionalDescriptions(newDesscriptions);
-  };
+  // const handleAdditionalDescriptionChange = (index: number, value: any) => {
+  //   const newDesscriptions = [...additionalDescriptions];
+  //   newDesscriptions[index] = value;
+  //   setAdditionalDescriptions(newDesscriptions);
+  // };
 
   // const removeAfterComma = (str: any, i: any) => {
   //   const splitStr = str.split(",");
@@ -196,7 +177,13 @@ const EditBlog = () => {
 
         <div>
           <label htmlFor="description">Description: </label>
-          <textarea
+          <ReactQuill
+            modules={TextEditorToolbarOptions()}
+            theme="snow"
+            value={value}
+            onChange={setValue}
+          />
+          {/* <textarea
             name="description"
             id="description"
             cols={80}
@@ -222,16 +209,16 @@ const EditBlog = () => {
                 }
                 onBlur={handleBlur}
                 className={`border border-black p-2 w-full`}
-              ></textarea>
+              ></textarea> 
             </div>
-          ))}
+          ))}*/}
         </div>
         {typeof errors.description === "string" && touched.description ? (
           <div className="form-error px-4 text-red-500">
             {errors.description}
           </div>
         ) : null}
-        <div className="flex gap-4">
+        {/* <div className="flex gap-4">
           <button
             type="button"
             onClick={handleAddDescription}
@@ -250,7 +237,7 @@ const EditBlog = () => {
           ) : (
             ""
           )}
-        </div>
+        </div> */}
 
         <div>
           <label htmlFor="image">Image: </label>

@@ -1,6 +1,7 @@
 import { useDispatch } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import { deleteblog } from "../redux/actions/blogActions";
+import HTMLReactParser from "html-react-parser/lib/index";
 
 const Card = ({
   image,
@@ -36,7 +37,11 @@ const Card = ({
             <div className="flex flex-col gap-2">
               <div className="image mx-auto w-full ">
                 <img
-                  src={`${storage_api}/${image}`}
+                  src={
+                    image !== null
+                      ? `${storage_api}/${image}`
+                      : `https://img.freepik.com/premium-vector/default-image-icon-vector-missing-picture-page-website-design-mobile-app-no-photo-available_87543-11093.jpg?w=360`
+                  }
                   alt="image"
                   className="w-full h-40 object-cover rounded-md"
                 />
@@ -47,7 +52,9 @@ const Card = ({
                   {tag}
                 </span> */}
                 <h2 className="font-semibold text-lg">{name.slice(0, 35)}</h2>
-                <p>{description.slice(0, 70)}</p>
+                <div className="ql-editor">
+                  {HTMLReactParser(description.slice(0, 70))}
+                </div>
               </div>
             </div>
           </Link>
