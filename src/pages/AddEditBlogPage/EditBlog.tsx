@@ -12,26 +12,25 @@ import { useFormik } from "formik";
 import { addBlogSchema } from "src/schemas";
 import ReactQuill from "react-quill";
 import TextEditorToolbarOptions from "src/components/TextEditorToolbarOptions";
+import Select from "react-select";
+import makeAnimated from "react-select/animated";
 
 const EditBlog = () => {
   const dispatch: any = useDispatch();
 
-  // const [prevName, setName] = useState<any>("");
   const [image, setImage] = useState<any>();
-  // const [description, setDescription] = useState<any>([]);
-  const [category, setCategory] = useState<any>("");
   const [tag, setTag] = useState<any>("");
-  const [tagId, setTagId] = useState<any[]>([]);
-  // const [additionalDescriptions, setAdditionalDescriptions]: any = useState([]);
-  const [value, setValue] = useState("");
 
   const blogId = useParams<any>();
   const blog_id = blogId.blog_id;
   const { singleBlog, categoryList, tagList } = useSelector(
     (state: any) => state.blogList
   );
+
   const formData = new FormData();
   formData.append("image", image);
+  const animatedComponents = makeAnimated();
+  console.log("🚀 ~ EditBlog ~ tagList:", tagList);
 
   const {
     values,
@@ -41,6 +40,7 @@ const EditBlog = () => {
     handleBlur,
     handleChange,
     handleSubmit,
+    setFieldValue,
   } = useFormik({
     initialValues: {
       name: "",
@@ -51,16 +51,17 @@ const EditBlog = () => {
     },
     validationSchema: addBlogSchema,
     onSubmit: (values) => {
-      const { name, category, tag } = values;
+      // const allDescriptions = [description, ...additionalDescriptions];
+      // const allDescriptions = [description, ...additionalDescriptions];
+      // const allDescriptions = [description, ...additionalDescriptions];
+      const { name, description, category, tag } = values;
       const formData: any = new FormData();
       formData.append("image", image);
-
-      // const allDescriptions = [description, ...additionalDescriptions];
 
       dispatch(
         editSingleBlog({
           name: name,
-          description: value,
+          description: description,
           category_id: category,
           tagId: tag,
           id: blog_id,
@@ -71,11 +72,9 @@ const EditBlog = () => {
   });
   console.log("🚀 ~ EditBlog ~ values:", values);
 
-  console.log("🚀 ~ EditBlog ~ description:", values.description);
-
   useEffect(() => {
     if (singleBlog) {
-      setValue(singleBlog.description);
+      setFieldValue("description", singleBlog.description);
       setValues({
         ...values,
         name: singleBlog.name,
@@ -85,18 +84,6 @@ const EditBlog = () => {
       });
     }
   }, [singleBlog]);
-  console.log("🚀 ~ useEffect ~ description:", values.description);
-
-  // useEffect(() => {
-  //   if (singleBlog) {
-  //     setName(singleBlog.name);
-  //     setDescription(singleBlog.description);
-  //     setCategory(singleBlog.category_id);
-  //     // setImage(singleBlog.image);
-  //     // setPrevTagId();
-  //     setTagId(singleBlog.tags.map((tag: any) => tag.id));
-  //   }
-  // }, [singleBlog]);
 
   useEffect(() => {
     dispatch(getCategory());
@@ -113,22 +100,40 @@ const EditBlog = () => {
     }
   };
 
-  const handleTagChange = (e: any) => {
-    const { value, checked } = e.target;
+  // const handleTagChange = (e: any) => {
+  //   const { value, checked } = e.target;
 
-    const tagIdNumber = parseInt(value, 10);
+  //   const tagIdNumber = parseInt(value, 10);
 
-    if (checked) {
-      // If checkbox is checked, add the tag ID to the array
-      if (!tagId.includes(tagIdNumber)) {
-        setTagId([...tagId, tagIdNumber]);
-      }
-      // console.log([tagId]);
-    } else {
-      // If checkbox is unchecked, remove the tag ID from the array
-      setTagId(tagId.filter((id: any) => id !== tagIdNumber));
-    }
-  };
+  //   if (checked) {
+  //     // If checkbox is checked, add the tag ID to the array
+  //     if (!tagId.includes(tagIdNumber)) {
+  //       setTagId([...tagId, tagIdNumber]);
+  //     }
+  //     // console.log([tagId]);
+  //   } else {
+  //     // If checkbox is unchecked, remove the tag ID from the array
+  //     setTagId(tagId.filter((id: any) => id !== tagIdNumber));
+  //   }
+  // };
+
+  const categoryOptions =
+    categoryList &&
+    categoryList?.flatMap((item: any) => [
+      {
+        value: item.id,
+        label: item.category,
+      },
+    ]);
+
+  const tagOptions =
+    tagList &&
+    tagList?.flatMap((item: any) => [
+      {
+        value: item.id,
+        label: item.tag,
+      },
+    ]);
 
   // const handleAddDescription = () => {
   //   setAdditionalDescriptions([...additionalDescriptions, ""]);
@@ -180,64 +185,16 @@ const EditBlog = () => {
           <ReactQuill
             modules={TextEditorToolbarOptions()}
             theme="snow"
-            value={value}
-            onChange={setValue}
-          />
-          {/* <textarea
-            name="description"
-            id="description"
-            cols={80}
-            rows={5}
             value={values.description}
-            className="border border-black p-2 w-full"
-            // onChange={(e) => setDescription(e.target.value)}
-            onBlur={handleBlur}
-            onChange={handleChange}
-          ></textarea>
-          {additionalDescriptions.map((description: string, index: number) => (
-            <div>
-              <label htmlFor="additionalDescription">
-                Additional Description:
-              </label>
-              <textarea
-                name={`description`}
-                id={`additionalDescription${index + 1}`}
-                rows={5}
-                value={description}
-                onChange={(e) =>
-                  handleAdditionalDescriptionChange(index, e.target.value)
-                }
-                onBlur={handleBlur}
-                className={`border border-black p-2 w-full`}
-              ></textarea> 
-            </div>
-          ))}*/}
+            onChange={(content) => setFieldValue("description", content)}
+            onBlur={() => handleBlur({ target: { name: "description" } })}
+          />
         </div>
         {typeof errors.description === "string" && touched.description ? (
           <div className="form-error px-4 text-red-500">
             {errors.description}
           </div>
         ) : null}
-        {/* <div className="flex gap-4">
-          <button
-            type="button"
-            onClick={handleAddDescription}
-            className="bg-slate-400 px-4 py-2 rounded-md hover:bg-slate-400/85 text-white"
-          >
-            Add Description
-          </button>
-          {additionalDescriptions.length > 0 ? (
-            <button
-              type="button"
-              className="bg-slate-400 px-4 py-2 rounded-md hover:bg-slate-400/85 text-white"
-              onClick={handleRemoveDescription}
-            >
-              Remove Description
-            </button>
-          ) : (
-            ""
-          )}
-        </div> */}
 
         <div>
           <label htmlFor="image">Image: </label>
@@ -249,10 +206,22 @@ const EditBlog = () => {
           />
         </div>
 
-        <div className="flex">
+        <div className="flex items-center gap-4">
           <label htmlFor="category">Category: </label>
 
-          <div>
+          <Select
+            className="min-w-40 max-w-fit"
+            components={animatedComponents}
+            options={categoryOptions}
+            name="category"
+            value={categoryOptions?.find(
+              (option: any) => option.value === values.category
+            )}
+            onChange={(selectedCategory: any) =>
+              setFieldValue("category", selectedCategory?.value)
+            }
+          />
+          {/* <div>
             <select
               onChange={(e: any) => setCategory(e.target.value)}
               value={category}
@@ -271,22 +240,32 @@ const EditBlog = () => {
                   </option>
                 ))}
             </select>
-          </div>
+          </div> */}
         </div>
         {typeof errors.category === "string" && touched.category ? (
           <div className="form-error px-4 text-red-500">{errors.category}</div>
         ) : null}
 
-        <div className="flex">
-          <label htmlFor="tag" className="pr-2">
-            Tags:{" "}
-          </label>
-          {/* <select
-              name=""
-              id=""
-              onClick={(e: any) => setTagId(e.target.value)}
-            > */}
-          {tagList &&
+        <div className="flex items-center gap-4">
+          <label htmlFor="tag">Tags:</label>
+          <Select
+            className="min-w-40 max-w-fit"
+            components={animatedComponents}
+            options={tagOptions}
+            name="tag"
+            value={tagOptions?.filter((option: any) =>
+              values.tag.includes(option.value)
+            )}
+            onChange={(selectedOptions) =>
+              setFieldValue(
+                "tag",
+                selectedOptions.map((item: any) => item.value)
+              )
+            }
+            isMulti
+          />
+
+          {/* {tagList &&
             tagList.map((item: any) => (
               <div key={item.id}>
                 <label htmlFor={item.tag} className="pr-1">
@@ -302,9 +281,7 @@ const EditBlog = () => {
                   onChange={handleTagChange}
                 />
               </div>
-              // <option value={item.id}>{item.tag}</option>
-            ))}
-          {/* </select> */}
+            ))} */}
         </div>
         {typeof errors.tag === "string" && touched.tag ? (
           <div className="form-error px-4 text-red-500">{errors.tag}</div>

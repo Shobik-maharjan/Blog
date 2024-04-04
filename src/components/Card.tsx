@@ -52,8 +52,8 @@ const Card = ({
                   {tag}
                 </span> */}
                 <h2 className="font-semibold text-lg">{name.slice(0, 35)}</h2>
-                <div className="ql-editor">
-                  {HTMLReactParser(description.slice(0, 70))}
+                <div className="ql-editor p-0">
+                  {HTMLReactParser(description.slice(0, 100))}
                 </div>
               </div>
             </div>

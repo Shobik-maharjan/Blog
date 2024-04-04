@@ -18,9 +18,10 @@ const AddBlog = () => {
   const dispatch: any = useDispatch();
   const [tag, setTag] = useState<any>("");
   const [category, setCategory] = useState<any>("");
-  const [value, setValue] = useState("");
 
   const { categoryList, tagList } = useSelector((state: any) => state.blogList);
+
+  const animatedComponents = makeAnimated();
 
   const {
     values,
@@ -39,7 +40,7 @@ const AddBlog = () => {
       tag: [],
     },
     validationSchema: addBlogSchema,
-    onSubmit: async (values, actions) => {
+    onSubmit: (values, actions) => {
       const { name, description, category, tag } = values;
 
       dispatch(
@@ -51,20 +52,14 @@ const AddBlog = () => {
         })
       );
       actions.resetForm();
-      setValue("");
     },
   });
-  console.log("🚀 ~ onSubmit: ~ category:", values.category);
+  console.log("🚀 ~ onSubmit: ~ tag:", values.tag);
 
-  const animatedComponents = makeAnimated();
   useEffect(() => {
     dispatch(getCategory());
     dispatch(getTagName());
   }, []);
-
-  useEffect(() => {
-    setFieldValue("description", value);
-  }, [value]);
 
   const handleTag = async (e: any) => {
     try {
@@ -106,6 +101,8 @@ const AddBlog = () => {
       },
     ]);
 
+  console.log(values);
+
   return (
     <div className="w-full py-7">
       <form
@@ -137,10 +134,14 @@ const AddBlog = () => {
             <ReactQuill
               modules={TextEditorToolbarOptions()}
               theme="snow"
-              value={value}
-              onChange={setValue}
+              value={values.description}
+              onChange={(content) => setFieldValue("description", content)}
+              onBlur={() => handleBlur({ target: { name: "description" } })}
             />
           </div>
+          {errors.description && touched.description ? (
+            <div className="form-error text-red-500">{errors.description}</div>
+          ) : null}
           <div>
             {/* <textarea
             name="description"
@@ -153,47 +154,7 @@ const AddBlog = () => {
             className={`border border-black p-2 w-full`}
             // onChange={(e) => setDescription(e.target.value)}
           ></textarea> 
-           {additionalDescriptions.map((description: string, index: number) => (
-            <div key={index}>
-              <label htmlFor="additionalDescription">
-                Additional Description:
-              </label>
-              <textarea
-                name={`description`}
-                id={`additionalDescription${index + 1}`}
-                rows={5}
-                value={description}
-                onChange={(e) =>
-                  handleAdditionalDescriptionChange(index, e.target.value)
-                }
-                onBlur={handleBlur}
-                className={`border border-black p-2 w-full`}
-              ></textarea>
-            </div>
-          ))}
-          {errors.description && touched.description ? (
-            <div className="form-error text-red-500">{errors.description}</div>
-          ) : null}
-          <div className="flex gap-4">
-            <button
-              type="button"
-              onClick={handleAddDescription}
-              className="bg-slate-400 px-4 py-2 rounded-md hover:bg-slate-400/85 text-white"
-            >
-              Add Description
-            </button>
-            {additionalDescriptions.length > 0 ? (
-              <button
-                type="button"
-                className="bg-slate-400 px-4 py-2 rounded-md hover:bg-slate-400/85 text-white"
-                onClick={handleRemoveDescription}
-              >
-                Remove Description
-              </button>
-            ) : (
-              ""
-            )}
-          </div> */}
+           */}
           </div>
         </div>
 
@@ -204,8 +165,12 @@ const AddBlog = () => {
             components={animatedComponents}
             options={categoryOptions}
             name="category"
-            value={values.category}
-            onChange={handleChange}
+            value={categoryOptions?.find(
+              (option: any) => option.value === values.category
+            )}
+            onChange={(selectedCategory: any) =>
+              setFieldValue("category", selectedCategory?.value)
+            }
           />
 
           {/* <select
@@ -238,7 +203,15 @@ const AddBlog = () => {
             components={animatedComponents}
             options={tagOptions}
             name="tag"
-            onChange={handleChange}
+            value={tagOptions?.find(
+              (options: any) => options.value === options.tag
+            )}
+            onChange={(selectedOptions) =>
+              setFieldValue(
+                "tag",
+                selectedOptions.map((item: any) => item.value)
+              )
+            }
             isMulti
           />
           {/* {tagList &&
